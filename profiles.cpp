@@ -115,13 +115,26 @@ namespace ProfileGenerator {
         unsigned int* IC::num2seq(long double num) {
             long double nn = num;
             unsigned int* seq = new unsigned int[mmax];
-            for (int i = mmax - 2; i > 0; i--) {
+            for (int i = mmax - 1; i >= 0; i--) {
                 double hh = pow(k, i);
-                unsigned int jj = nn / hh + 1;
-                seq[mmax - 1 - i] = jj;
-                nn -= (jj - 1) * hh;
+                int pos = mmax - 1 - i;
+
+                long double ost = std::fmodl(nn, hh);
+                long double chast;
+                std::modfl(nn / hh, &chast);
+
+                if (ost == 0) {
+                    seq[pos] = chast;
+                    for (int ii = pos + 1; ii < mmax; ii++)
+                        seq[ii] = k;
+                    break;
+                }
+                else { //ost > 0
+                    seq[pos] = chast + 1;
+                }
+
+                nn = ost;
             }
-            seq[mmax - 1] = (unsigned int)nn;
 
             return seq;
         }
